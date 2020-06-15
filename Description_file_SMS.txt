@@ -1,0 +1,35 @@
+*******Description file*******
+
+flow_SMSBlock module : buffer,clk, rst, start, tout, en, ten, odata
+/////////////////////////////////////////////////////////////////////////
+
+input buffer-the direct input from final reciever
+input clk-main clock
+input rst- main reset
+input start-signal to start the fsm
+input tout- timeout signal from global_count reg
+output en- enable
+output ten- control signal to global counter
+output odata- sends the data to the Transmitter
+
+/////////////////////////////////////////////////////////////////////////
+
+atcu_string module : buffer,ctrl,msg_no,msg,ph_no
+//////////////////////////////////////////////////////////////////////
+
+input [7:0]buffer-  buffer from the UART block
+output [2:0]ctrl- which telll what kind of operation to perform 
+output msg_no- the place where the message is stored
+output msg- message output to higher module(flow_SMS Block) 
+output ph_no.- stores the phone no.
+
+//////////////////////////////////////////////////////////////////////
+
+sms_block_FSM module : clk, start, rst, msg_no, tout, ctrl, rom, en, ten, odata, addr
+input clk - main clock
+input start, rst,msg no, tout,ctrl (mentioned in the Flow_SMSBlock)
+input rom- the commands 
+output en , ten, odata (mentioned in the Flow_SMSBlock)
+output addr - where the command is there.
+
+////////////////////////////////////////////////////////////////////////

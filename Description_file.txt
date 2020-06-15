@@ -1,0 +1,94 @@
+*************************************************Description file*****************************************************
+
+samp module : clk,rst,y,en,rt
+/////////////////////////////////////////////////////////////////////////
+input clk-main clock,
+input rst- main reset
+output y- output
+input en- enable
+output rt- control signal to samp_counter// go low when baudrate==baud
+/////////////////////////////////////////////////////////////////////////
+
+samp_counter : clk1,counter,rt
+/////////////////////////////////////////////////////////////////////////
+input clk1- output y from samp
+output reg[3:0] counter- 4-bit up counter//generating 8th pulse
+input rt- control signal from samp// increments the counter by 1 when aevent occurs on this signal line
+/////////////////////////////////////////////////////////////////////////
+
+sampler : counter,y
+/////////////////////////////////////////////////////////////////////////
+input[3:0] counter-output from samp_counter
+ouput reg y- main output to transmitter and receiver for collecting or transmitting data
+/////////////////////////////////////////////////////////////////////////
+
+inisamp : clk,rst,y,rt
+/////////////////////////////////////////////////////////////////////////
+input clk-main clock
+input rst- main reset
+output y-output
+output reg rt- control signal b/w inisamp and inicount
+/////////////////////////////////////////////////////////////////////////
+
+inicount : clk1,rst,counter
+/////////////////////////////////////////////////////////////////////////
+input clk1-output y from inisamp
+input rst-main reset
+output reg[3:0] counter- 4-bit up counter
+/////////////////////////////////////////////////////////////////////////
+
+inisampler : cnt,y
+/////////////////////////////////////////////////////////////////////////
+input[3:0] cnt- 4-bit output from inicount
+output reg y- output for inifsm
+/////////////////////////////////////////////////////////////////////////
+
+global_count : clk,rst,cnt,ten,st
+/////////////////////////////////////////////////////////////////////////
+input clk- main clock
+input rst- main reset
+input ten- enable from inifsm
+input st- control from inifsm
+output cnt- output for timeout
+/////////////////////////////////////////////////////////////////////////
+
+inifsm : clk,clk1,load,okch,wai,odata,rst,tout,ten,addr,rom,en,start,st
+/////////////////////////////////////////////////////////////////////////
+output reg[7:0] odata- data to transmitter
+output reg load-load signal to transmitter to load data to trasnmitting bus
+output reg ten- control signal to global counter to control start ans stop of signals
+output reg en- enable signal for inifsm
+output reg start- start signal after inifsm completion
+output reg st- control to acknowledge timeout signal received and reset of timeout counter
+input clk-main clock
+input clk1-inisampler output to run the inifsm
+input wai-control signal b/w inifsm and final_trans
+input rst-main reset
+input tout- timeout signal from global_count
+input okch- outputs of ATCM
+input[7:0] rom- output of memory IP core
+output reg[6:0] addr- input to memory IP core// memory row address
+/////////////////////////////////////////////////////////////////////////
+
+final_trans : clk,clk1,data,load,wai,y,st1,st2
+/////////////////////////////////////////////////////////////////////////
+input clk-main clock
+input clk1- sampler output to run transmitter
+input load- control signal to load data on trasnmitting bus
+input st2- control signal to gain bus access
+input[7:0] data- data from any module to be transmitted
+output reg wai- control signal to other modules to wait until transmission completes
+output reg y- output of transmitter @ 115200
+output reg st1-flag indicating trasnmitter is using the bus and other modules to refrain from accessing bus.
+//////////////////////////////////////////////////////////////////////////
+
+final_receiver : clk,rst,idata,odata,wai,st1,st2
+//////////////////////////////////////////////////////////////////////////
+input clk-main clock
+input rst-main reset
+input idata- data from IoT module to FPGA via bus
+input st1- control to signal to gain access to bus
+output[7:0] odata- 8-bit parallel data receiver from IoT module
+output wai- control signal to tell other to wait for the output
+output st2- flag indicating other modules to not access the bus when receiver is using it
+///////////////////////////////////////////////////////////////////////////

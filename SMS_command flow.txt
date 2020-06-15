@@ -1,0 +1,31 @@
+// Initial Config.
+
+*AT+CMGF=1  //set to text mode  
+R: OK       // this is done in the initial set conditions with initFSM
+*AT+CSDH=1  // while reading msg get originated add.
+R: OK
+*AT+AMGD=1,4  //delete all previous messages
+R: OK
+*AT+CPMS="SM","SM","SM"  // set the memory location of the Recv msg 
+R: +CPMS:
+
+   OK
+
+// recieving a msg 
+
+R: +CMTI:"SM",3
+*AT+CMGR=3
+R: +CMGR:"10letters","sender","timestamp",145,4,0,0,"carrier",145,27
+   <message recieved>   	//phone no.
+   OK                           //followed by the message.
+
+
+// sending a message 
+
+AT+CSCS="GSM"		        	//setting to gsm 
+R: OK
+AT+CSCA="+910000000000",145		//the message service carrier
+R: OK
+AT+CMGS="+919550649893"
+HAI I M SENDING THIS<ctrl+Z>		// sending the sms
+R: +CMGS: 247

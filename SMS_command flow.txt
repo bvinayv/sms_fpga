@@ -1,27 +1,28 @@
-// Initial Config.
-
+/////////////////////////////////////////////////////////////////////////
+// Initial Config. for SMS
+/////////////////////////////////////////////////////////////////////////
 *AT+CMGF=1  //set to text mode  
 R: OK       // this is done in the initial set conditions with initFSM
 *AT+CSDH=1  // while reading msg get originated add.
 R: OK
-*AT+AMGD=1,4  //delete all previous messages
+*AT+CMGD=1,4  //delete all previous messages
 R: OK
 *AT+CPMS="SM","SM","SM"  // set the memory location of the Recv msg 
 R: +CPMS:
 
    OK
-
+/////////////////////////////////////////////////////////////////////////
 // recieving a msg 
-
+/////////////////////////////////////////////////////////////////////////
 R: +CMTI:"SM",3
 *AT+CMGR=3
 R: +CMGR:"10letters","sender","timestamp",145,4,0,0,"carrier",145,27
    <message recieved>   	//phone no.
    OK                           //followed by the message.
 
-
+/////////////////////////////////////////////////////////////////////////
 // sending a message 
-
+/////////////////////////////////////////////////////////////////////////
 AT+CSCS="GSM"		        	//setting to gsm 
 R: OK
 AT+CSCA="+910000000000",145		//the message service carrier
@@ -29,3 +30,33 @@ R: OK
 AT+CMGS="+919550649893"
 HAI I M SENDING THIS<ctrl+Z>		// sending the sms
 R: +CMGS: 247
+/////////////////////////////////////////////////////////////////////////
+// detecting the init commands 
+////////////////////////////////////////////////////////////////////////
+*AT+CGSN=?<CR>
+R: OK
+
+*AT+CGSN<CR>
+R: (IMEI No.)098765434567890987654345678
+   OK
+
+*AT+CREG=1<CR>
+R: OK
+
+*AT+QGPS=1<CR>
+R: OK
+
+*AT+QGPALOC?<CR>
+R: +QGPSLOC: 031054.0,3150.7899N,11711.9261E,2.1,48.4,2,0.00,0.0,0.0,070515,04
+   OK
+
+(done)*AT+CMGF=1<CR>
+R: OK
+
+*AT+CTZU=3<CR>
+R: OK
+////////////////////////////////////////////////////////////////////////
+// CALL
+////////////////////////////////////////////////////////////////////////
+
++CLIP: “02151082965”,129,,,“QUECTEL”,0
